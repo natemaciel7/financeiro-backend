@@ -23,7 +23,7 @@ Crie um arquivo .env:
 
 
 DATABASE_URL=mongodb+srv://natalia:dinossauroreX7*@financeiro.ni58g.mongodb.net/?retryWrites=true&w=majority&appName=financeiro
-JWT_SECRET=MNWK5dxn+61Ht8InYndtESk7K1d0u5DveCgHrZ+oupM=
+JWT_SECRET=9f66505c-fd7b-43f2-90eb-570977d2083e
 PORT=5000
 Inicie o servidor:
 
