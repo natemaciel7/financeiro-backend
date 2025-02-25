@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import { ObjectId } from "mongodb";
 
 export async function addTransaction(req, res) {
   const { value, description, type } = req.body;
@@ -35,5 +36,24 @@ export async function getTransactions(req, res) {
     res.status(200).send(transactions);
   } catch (err) {
     res.status(500).send("Erro interno");
+  }
+}
+export async function deleteTransaction(req, res) {
+  const { id } = req.params;
+  const userId = req.userId;
+
+  try {
+    const transaction = await db
+      .collection("transactions")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!transaction) return res.status(404).send("Transação não encontrada");
+    if (transaction.userId !== userId)
+      return res.status(403).send("Acesso negado");
+
+    await db.collection("transactions").deleteOne({ _id: new ObjectId(id) });
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(500).send("Erro interno do servidor");
   }
 }
