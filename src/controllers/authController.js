@@ -2,10 +2,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { db } from "../db.js";
+import { userSchema } from "../schemas/userSchema.js";
 
 dotenv.config();
 
 export async function signUp(req, res) {
+  const { error } = userSchema.validate(req.body);
+  if (error)
+    return res.status(422).send(error.details.map((err) => err.message));
   const { name, email, password } = req.body;
   try {
     const existingUser = await db.collection("users").findOne({ email });

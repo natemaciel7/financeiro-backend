@@ -1,7 +1,12 @@
 import { db } from "../db.js";
 import { ObjectId } from "mongodb";
+import { transactionSchema } from "../schemas/transactionSchema.js";
 
 export async function addTransaction(req, res) {
+  const { error } = transactionSchema.validate(req.body);
+  if (error)
+    return res.status(422).send(error.details.map((err) => err.message));
+
   const { value, description, type } = req.body;
   const userId = req.userId;
 
@@ -23,6 +28,7 @@ export async function addTransaction(req, res) {
     res.status(500).send("Erro interno");
   }
 }
+
 export async function editTransaction(req, res) {
   const { id } = req.params;
   const { value, description, type } = req.body;
@@ -56,13 +62,19 @@ export async function editTransaction(req, res) {
 
 export async function getTransactions(req, res) {
   const userId = req.userId;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
 
   try {
     const transactions = await db
       .collection("transactions")
       .find({ userId })
       .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
+
     res.status(200).send(transactions);
   } catch (err) {
     res.status(500).send("Erro interno");
